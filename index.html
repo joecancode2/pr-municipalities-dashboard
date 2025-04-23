@@ -1,1 +1,95 @@
- 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Índice de Bienestar Municipal de Puerto Rico</title>
+  <!-- Import Montserrat font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- Include Chart.js for data visualization -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.7.1/chart.min.js"></script>
+  <!-- Include Leaflet.js for maps -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+</head>
+<body>
+  <div id="dashboard-container">
+    <!-- Main Dashboard Content -->
+    <div class="dashboard-content">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <h3>Filtros</h3>
+        
+        <!-- View filters -->
+        <div class="filter-section">
+          <button id="map-view-btn" class="view-btn active">Datos Municipales</button>
+          <button id="compare-view-btn" class="view-btn">Compara Municipios</button>
+        </div>
+        
+        <!-- Category filters -->
+        <div class="filter-section">
+          <h4>Categorías</h4>
+          <div class="category-buttons">
+            <button class="category-btn active" data-category="economy">Economía</button>
+            <button class="category-btn" data-category="education">Educación</button>
+            <button class="category-btn" data-category="family">Familia</button>
+            <button class="category-btn" data-category="health">Salud</button>
+            <button class="category-btn" data-category="safety">Seguridad</button>
+          </div>
+        </div>
+        
+        <!-- Indicators -->
+        <div class="filter-section">
+          <h4>Indicadores</h4>
+          <div id="indicators-list" class="indicators-list">
+            <!-- Will be populated via JavaScript -->
+          </div>
+        </div>
+        
+        <!-- Municipality selection -->
+        <div class="filter-section">
+          <h4>Municipios Seleccionados (<span id="selected-count">0</span>/4)</h4>
+          <div id="selected-municipalities" class="selected-municipalities">
+            <!-- Will be populated via JavaScript -->
+          </div>
+          
+          <h4>Buscar Municipios</h4>
+          <input type="text" id="municipality-search" placeholder="Buscar municipio...">
+          
+          <div id="municipality-list" class="municipality-list">
+            <!-- Will be populated via JavaScript -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- Main visualization area -->
+      <div class="main-content">
+        <div id="visualization-title" class="visualization-title">
+          <!-- Will be populated via JavaScript -->
+        </div>
+        
+        <div id="map-view" class="view-container">
+          <div id="map-container"></div>
+          <div id="map-legend" class="legend"></div>
+        </div>
+        
+        <div id="compare-view" class="view-container" style="display: none;">
+          <div id="chart-container"></div>
+          <div id="data-table"></div>
+        </div>
+        
+        <div id="municipality-rankings" class="rankings-container">
+          <h3>Posición General de Municipios</h3>
+          <div id="rankings-content">
+            <!-- Will be populated via JavaScript -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html> 
