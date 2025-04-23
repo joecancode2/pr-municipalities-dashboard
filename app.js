@@ -20,29 +20,33 @@ async function initializeApp() {
         console.log('Starting data fetch...');
         
         // Load data with better error handling
-        const municipalitiesResponse = await fetch('data/municipalities.json');
+        const [municipalitiesResponse, indicatorsResponse] = await Promise.all([
+            fetch('data/municipalities.json'),
+            fetch('data/indicators.json')
+        ]);
+
         if (!municipalitiesResponse.ok) {
             throw new Error(`HTTP error! status: ${municipalitiesResponse.status}`);
         }
-        const municipalitiesData = await municipalitiesResponse.json();
-        console.log('Municipalities data loaded:', municipalitiesData);
-
-        const indicatorsResponse = await fetch('data/indicators.json');
         if (!indicatorsResponse.ok) {
             throw new Error(`HTTP error! status: ${indicatorsResponse.status}`);
         }
+
+        const municipalitiesData = await municipalitiesResponse.json();
         const indicatorsData = await indicatorsResponse.json();
+        
+        console.log('Municipalities data loaded:', municipalitiesData);
         console.log('Indicators data loaded:', indicatorsData);
         
-        // Update state with the correct data structure
-        window.municipalitiesData = municipalitiesData.municipalities || [];
-        window.indicatorsData = indicatorsData.indicators || [];
+        // Store data in window object for global access
+        window.municipalitiesData = municipalitiesData.municipalities;
+        window.indicatorsData = indicatorsData.indicators;
         
         console.log('Data loaded successfully. Initializing components...');
         
         // Initialize components
         initializeMap();
-        populateIndicators();
+        filterIndicatorsByCategory('economy'); // Show economy indicators by default
         populateMunicipalities();
         setupEventListeners();
         
@@ -63,26 +67,38 @@ function initializeMap() {
     }).addTo(map);
 }
 
-// Populate indicators list
-function populateIndicators() {
-    if (!window.indicatorsData || !window.indicatorsData.length) {
+// Filter indicators by category
+function filterIndicatorsByCategory(category) {
+    if (!window.indicatorsData) {
         console.error('No indicators data available');
         return;
     }
     
-    const indicatorsHTML = window.indicatorsData
+    // Filter indicators by category
+    const filteredIndicators = window.indicatorsData.filter(indicator => 
+        indicator.category === category
+    );
+    
+    // Generate HTML for filtered indicators
+    const indicatorsHTML = filteredIndicators
         .map(indicator => `
             <div class="indicator-item" data-id="${indicator.id}" data-category="${indicator.category}">
                 ${indicator.name}
             </div>
         `).join('');
     
+    // Update the indicators list
     indicatorsList.innerHTML = indicatorsHTML;
+    
+    // Update category buttons
+    document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.category === category);
+    });
 }
 
 // Populate municipalities list
 function populateMunicipalities() {
-    if (!window.municipalitiesData || !window.municipalitiesData.length) {
+    if (!window.municipalitiesData) {
         console.error('No municipalities data available');
         return;
     }
@@ -111,19 +127,6 @@ function displayError(error) {
     }
 }
 
-// Filter indicators by category
-function filterIndicatorsByCategory(category) {
-    if (!window.indicatorsData) return;
-    
-    document.querySelectorAll('.indicator-item').forEach(item => {
-        if (category === 'all' || item.dataset.category === category) {
-            item.style.display = 'block';
-        } else {
-            item.style.display = 'none';
-        }
-    });
-}
-
 // Setup event listeners
 function setupEventListeners() {
     // View toggle
@@ -133,31 +136,9 @@ function setupEventListeners() {
     // Category buttons
     document.querySelectorAll('.category-btn').forEach(button => {
         button.addEventListener('click', (e) => {
-            // Remove active class from all category buttons
-            document.querySelectorAll('.category-btn').forEach(btn => 
-                btn.classList.remove('active'));
-            
-            // Add active class to clicked button
-            e.target.classList.add('active');
-            
-            // Filter indicators
-            filterIndicatorsByCategory(e.target.dataset.category);
+            const category = e.target.dataset.category;
+            filterIndicatorsByCategory(category);
         });
-    });
-    
-    // Indicators selection
-    indicatorsList.addEventListener('click', (e) => {
-        const indicator = e.target.closest('.indicator-item');
-        if (!indicator) return;
-        
-        // Remove active class from all indicators
-        document.querySelectorAll('.indicator-item').forEach(item => 
-            item.classList.remove('active'));
-        
-        // Add active class to selected indicator
-        indicator.classList.add('active');
-        selectedIndicator = indicator.dataset.id;
-        updateVisualization();
     });
     
     // Municipality search
@@ -183,6 +164,21 @@ function setupEventListeners() {
             !selectedMunicipalitiesList.some(m => m.id === id)) {
             addSelectedMunicipality(id, name);
         }
+    });
+    
+    // Indicator selection
+    indicatorsList.addEventListener('click', (e) => {
+        const indicator = e.target.closest('.indicator-item');
+        if (!indicator) return;
+        
+        // Toggle active class
+        document.querySelectorAll('.indicator-item').forEach(item => 
+            item.classList.remove('active'));
+        indicator.classList.add('active');
+        
+        // Update selected indicator
+        selectedIndicator = indicator.dataset.id;
+        updateVisualization();
     });
 }
 
