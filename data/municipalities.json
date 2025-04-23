@@ -1,0 +1,132 @@
+{
+  "municipalities": {
+    "Aguadilla": {
+      "economy": {
+        "unemployment_rate": 8.5,
+        "median_income": 35000
+      },
+      "education": {
+        "graduation_rate": 85,
+        "college_enrollment": 45
+      },
+      "family": {
+        "single_parent_households": 35,
+        "poverty_rate": 28
+      },
+      "health": {
+        "insurance_coverage": 92,
+        "life_expectancy": 78
+      },
+      "safety": {
+        "crime_rate": 15,
+        "emergency_response_time": 8
+      }
+    },
+    "Adjuntas": {
+      "economy": {
+        "unemployment_rate": 9.2,
+        "median_income": 32000
+      },
+      "education": {
+        "graduation_rate": 82,
+        "college_enrollment": 40
+      },
+      "family": {
+        "single_parent_households": 38,
+        "poverty_rate": 32
+      },
+      "health": {
+        "insurance_coverage": 90,
+        "life_expectancy": 77
+      },
+      "safety": {
+        "crime_rate": 12,
+        "emergency_response_time": 10
+      }
+    },
+    "Aguada": {
+      "economy": {
+        "unemployment_rate": 8.8,
+        "median_income": 33500
+      },
+      "education": {
+        "graduation_rate": 83,
+        "college_enrollment": 42
+      },
+      "family": {
+        "single_parent_households": 36,
+        "poverty_rate": 30
+      },
+      "health": {
+        "insurance_coverage": 91,
+        "life_expectancy": 77.5
+      },
+      "safety": {
+        "crime_rate": 14,
+        "emergency_response_time": 9
+      }
+    }
+  },
+  "indicators": {
+    "economy": [
+      {
+        "name": "Tasa de Desempleo",
+        "key": "unemployment_rate",
+        "unit": "%"
+      },
+      {
+        "name": "Ingreso Medio",
+        "key": "median_income",
+        "unit": "$"
+      }
+    ],
+    "education": [
+      {
+        "name": "Tasa de Graduación",
+        "key": "graduation_rate",
+        "unit": "%"
+      },
+      {
+        "name": "Matrícula Universitaria",
+        "key": "college_enrollment",
+        "unit": "%"
+      }
+    ],
+    "family": [
+      {
+        "name": "Hogares Monoparentales",
+        "key": "single_parent_households",
+        "unit": "%"
+      },
+      {
+        "name": "Tasa de Pobreza",
+        "key": "poverty_rate",
+        "unit": "%"
+      }
+    ],
+    "health": [
+      {
+        "name": "Cobertura de Seguro Médico",
+        "key": "insurance_coverage",
+        "unit": "%"
+      },
+      {
+        "name": "Esperanza de Vida",
+        "key": "life_expectancy",
+        "unit": "años"
+      }
+    ],
+    "safety": [
+      {
+        "name": "Tasa de Criminalidad",
+        "key": "crime_rate",
+        "unit": "por 1,000"
+      },
+      {
+        "name": "Tiempo de Respuesta a Emergencias",
+        "key": "emergency_response_time",
+        "unit": "minutos"
+      }
+    ]
+  }
+} 
