@@ -19,14 +19,28 @@ let indicatorsData = [];
 // Initialize the application
 async function initializeApp() {
     try {
-        // Load data
-        const [municipalities, indicators] = await Promise.all([
-            fetch('data/municipalities.json').then(res => res.json()),
-            fetch('data/indicators.json').then(res => res.json())
-        ]);
+        console.log('Starting data fetch...');
         
-        municipalitiesData = municipalities;
-        indicatorsData = indicators;
+        // Load data with better error handling
+        const municipalitiesResponse = await fetch('data/municipalities.json');
+        if (!municipalitiesResponse.ok) {
+            throw new Error(`HTTP error! status: ${municipalitiesResponse.status}`);
+        }
+        const municipalities = await municipalitiesResponse.json();
+        console.log('Municipalities data loaded:', municipalities);
+
+        const indicatorsResponse = await fetch('data/indicators.json');
+        if (!indicatorsResponse.ok) {
+            throw new Error(`HTTP error! status: ${indicatorsResponse.status}`);
+        }
+        const indicators = await indicatorsResponse.json();
+        console.log('Indicators data loaded:', indicators);
+        
+        // Update state
+        municipalitiesData = municipalities.municipalities || [];
+        indicatorsData = indicators.indicators || [];
+        
+        console.log('Data loaded successfully. Initializing components...');
         
         // Initialize components
         initializeMap();
@@ -36,6 +50,17 @@ async function initializeApp() {
         
     } catch (error) {
         console.error('Error initializing app:', error);
+        // Display error message to user
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            mainContent.innerHTML = `
+                <div style="padding: 20px; color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">
+                    <h3>Error loading data</h3>
+                    <p>There was a problem loading the necessary data. Please try refreshing the page.</p>
+                    <p>Technical details: ${error.message}</p>
+                </div>
+            `;
+        }
     }
 }
 
