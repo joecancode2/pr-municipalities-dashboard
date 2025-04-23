@@ -63,6 +63,102 @@
           "drug_related_crimes": 115.7
         }
       }
+    },
+    {
+      "id": "aguadilla",
+      "name": "Aguadilla",
+      "coordinates": [18.4275, -67.1542],
+      "data": {
+        "economy": {
+          "unemployment_rate": 10.5,
+          "median_income": 18234,
+          "poverty_rate": 38.6
+        },
+        "education": {
+          "graduation_rate": 82.1,
+          "college_enrollment": 52.4,
+          "test_scores": 74.5
+        },
+        "family": {
+          "single_parent_households": 30.5,
+          "child_poverty": 45.2,
+          "teen_pregnancy": 13.1
+        },
+        "health": {
+          "insurance_coverage": 94.2,
+          "infant_mortality": 5.5,
+          "life_expectancy": 79.8
+        },
+        "safety": {
+          "crime_rate": 215.8,
+          "domestic_violence": 75.4,
+          "drug_related_crimes": 110.2
+        }
+      }
+    },
+    {
+      "id": "aguas-buenas",
+      "name": "Aguas Buenas",
+      "coordinates": [18.2572, -66.1024],
+      "data": {
+        "economy": {
+          "unemployment_rate": 11.2,
+          "median_income": 16892,
+          "poverty_rate": 43.5
+        },
+        "education": {
+          "graduation_rate": 77.5,
+          "college_enrollment": 46.8,
+          "test_scores": 70.1
+        },
+        "family": {
+          "single_parent_households": 33.4,
+          "child_poverty": 49.8,
+          "teen_pregnancy": 14.8
+        },
+        "health": {
+          "insurance_coverage": 93.1,
+          "infant_mortality": 6.0,
+          "life_expectancy": 78.9
+        },
+        "safety": {
+          "crime_rate": 232.4,
+          "domestic_violence": 82.1,
+          "drug_related_crimes": 118.9
+        }
+      }
+    },
+    {
+      "id": "aibonito",
+      "name": "Aibonito",
+      "coordinates": [18.1408, -66.2663],
+      "data": {
+        "economy": {
+          "unemployment_rate": 10.8,
+          "median_income": 17453,
+          "poverty_rate": 41.2
+        },
+        "education": {
+          "graduation_rate": 79.8,
+          "college_enrollment": 49.2,
+          "test_scores": 72.4
+        },
+        "family": {
+          "single_parent_households": 31.5,
+          "child_poverty": 47.3,
+          "teen_pregnancy": 13.9
+        },
+        "health": {
+          "insurance_coverage": 93.9,
+          "infant_mortality": 5.7,
+          "life_expectancy": 79.5
+        },
+        "safety": {
+          "crime_rate": 220.1,
+          "domestic_violence": 77.8,
+          "drug_related_crimes": 113.5
+        }
+      }
     }
   ]
 } 

@@ -105,7 +105,8 @@ function populateMunicipalities() {
     
     const municipalitiesHTML = window.municipalitiesData
         .map(municipality => `
-            <div class="municipality-item" data-id="${municipality.id}">
+            <div class="municipality-item${selectedMunicipalitiesList.some(m => m.id === municipality.id) ? ' selected' : ''}" 
+                 data-id="${municipality.id}">
                 ${municipality.name}
             </div>
         `).join('');
@@ -160,9 +161,10 @@ function setupEventListeners() {
         const id = municipality.dataset.id;
         const name = municipality.textContent.trim();
         
-        if (selectedMunicipalitiesList.length < 4 && 
-            !selectedMunicipalitiesList.some(m => m.id === id)) {
+        if (!municipality.classList.contains('selected')) {
             addSelectedMunicipality(id, name);
+        } else {
+            removeSelectedMunicipality(id);
         }
     });
     
@@ -199,9 +201,22 @@ function switchView(view) {
 
 // Add selected municipality
 function addSelectedMunicipality(id, name) {
-    selectedMunicipalitiesList.push({ id, name });
-    updateSelectedMunicipalities();
-    updateVisualization();
+    if (selectedMunicipalitiesList.length >= 4) {
+        alert('Máximo 4 municipios pueden ser seleccionados');
+        return;
+    }
+    
+    if (!selectedMunicipalitiesList.some(m => m.id === id)) {
+        selectedMunicipalitiesList.push({ id, name });
+        updateSelectedMunicipalities();
+        updateVisualization();
+        
+        // Update municipality item visual state
+        const item = document.querySelector(`.municipality-item[data-id="${id}"]`);
+        if (item) {
+            item.classList.add('selected');
+        }
+    }
 }
 
 // Remove selected municipality
@@ -209,11 +224,17 @@ function removeSelectedMunicipality(id) {
     selectedMunicipalitiesList = selectedMunicipalitiesList.filter(m => m.id !== id);
     updateSelectedMunicipalities();
     updateVisualization();
+    
+    // Update municipality item visual state
+    const item = document.querySelector(`.municipality-item[data-id="${id}"]`);
+    if (item) {
+        item.classList.remove('selected');
+    }
 }
 
 // Update selected municipalities display
 function updateSelectedMunicipalities() {
-    selectedCount.textContent = selectedMunicipalitiesList.length;
+    selectedCount.textContent = `${selectedMunicipalitiesList.length}/4`;
     
     const municipalitiesHTML = selectedMunicipalitiesList
         .map(municipality => `

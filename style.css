@@ -138,27 +138,33 @@
   }
   
   .municipality-pill {
-    background-color: #f0007a;
-    color: #fff2e5;
-    padding: 5px 10px;
+    background-color: #ff9b1c;
+    color: white;
+    padding: 6px 12px;
     border-radius: 20px;
-    font-size: 13px;
+    font-size: 14px;
     display: flex;
     align-items: center;
+    gap: 8px;
+    font-weight: 500;
   }
   
   .remove-btn {
-    margin-left: 5px;
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background-color: rgba(26, 29, 36, 0.2);
-    color: #fff2e5;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+  
+  .remove-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
   }
   
   #municipality-search {
@@ -182,6 +188,7 @@
     cursor: pointer;
     display: flex;
     align-items: center;
+    transition: all 0.2s ease;
   }
   
   .municipality-item:hover {
@@ -190,8 +197,10 @@
   }
   
   .municipality-item.selected {
-    background-color: rgba(255, 155, 28, 0.1);
+    background-color: #fff2e5;
     border-left: 3px solid #ff9b1c;
+    color: #ff9b1c;
+    font-weight: 500;
   }
   
   /* Main Content Area */
