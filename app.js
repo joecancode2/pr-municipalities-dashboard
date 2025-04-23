@@ -13,8 +13,6 @@ const selectedCount = document.getElementById('selected-count');
 let currentView = 'map';
 let selectedIndicator = null;
 let selectedMunicipalitiesList = [];
-let municipalitiesData = [];
-let indicatorsData = [];
 
 // Initialize the application
 async function initializeApp() {
@@ -26,19 +24,19 @@ async function initializeApp() {
         if (!municipalitiesResponse.ok) {
             throw new Error(`HTTP error! status: ${municipalitiesResponse.status}`);
         }
-        const municipalities = await municipalitiesResponse.json();
-        console.log('Municipalities data loaded:', municipalities);
+        const municipalitiesData = await municipalitiesResponse.json();
+        console.log('Municipalities data loaded:', municipalitiesData);
 
         const indicatorsResponse = await fetch('data/indicators.json');
         if (!indicatorsResponse.ok) {
             throw new Error(`HTTP error! status: ${indicatorsResponse.status}`);
         }
-        const indicators = await indicatorsResponse.json();
-        console.log('Indicators data loaded:', indicators);
+        const indicatorsData = await indicatorsResponse.json();
+        console.log('Indicators data loaded:', indicatorsData);
         
-        // Update state
-        municipalitiesData = municipalities.municipalities || [];
-        indicatorsData = indicators.indicators || [];
+        // Update state with the correct data structure
+        window.municipalitiesData = municipalitiesData.municipalities || [];
+        window.indicatorsData = indicatorsData.indicators || [];
         
         console.log('Data loaded successfully. Initializing components...');
         
@@ -50,17 +48,7 @@ async function initializeApp() {
         
     } catch (error) {
         console.error('Error initializing app:', error);
-        // Display error message to user
-        const mainContent = document.querySelector('.main-content');
-        if (mainContent) {
-            mainContent.innerHTML = `
-                <div style="padding: 20px; color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">
-                    <h3>Error loading data</h3>
-                    <p>There was a problem loading the necessary data. Please try refreshing the page.</p>
-                    <p>Technical details: ${error.message}</p>
-                </div>
-            `;
-        }
+        displayError(error);
     }
 }
 
@@ -77,11 +65,14 @@ function initializeMap() {
 
 // Populate indicators list
 function populateIndicators() {
-    if (!indicatorsData.length) return;
+    if (!window.indicatorsData || !window.indicatorsData.length) {
+        console.error('No indicators data available');
+        return;
+    }
     
-    const indicatorsHTML = indicatorsData
+    const indicatorsHTML = window.indicatorsData
         .map(indicator => `
-            <div class="indicator-item" data-id="${indicator.id}">
+            <div class="indicator-item" data-id="${indicator.id}" data-category="${indicator.category}">
                 ${indicator.name}
             </div>
         `).join('');
@@ -91,9 +82,12 @@ function populateIndicators() {
 
 // Populate municipalities list
 function populateMunicipalities() {
-    if (!municipalitiesData.length) return;
+    if (!window.municipalitiesData || !window.municipalitiesData.length) {
+        console.error('No municipalities data available');
+        return;
+    }
     
-    const municipalitiesHTML = municipalitiesData
+    const municipalitiesHTML = window.municipalitiesData
         .map(municipality => `
             <div class="municipality-item" data-id="${municipality.id}">
                 ${municipality.name}
@@ -103,11 +97,53 @@ function populateMunicipalities() {
     municipalityList.innerHTML = municipalitiesHTML;
 }
 
+// Display error message
+function displayError(error) {
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+        mainContent.innerHTML = `
+            <div style="padding: 20px; color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">
+                <h3>Error loading data</h3>
+                <p>There was a problem loading the necessary data. Please try refreshing the page.</p>
+                <p>Technical details: ${error.message}</p>
+            </div>
+        `;
+    }
+}
+
+// Filter indicators by category
+function filterIndicatorsByCategory(category) {
+    if (!window.indicatorsData) return;
+    
+    document.querySelectorAll('.indicator-item').forEach(item => {
+        if (category === 'all' || item.dataset.category === category) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
 // Setup event listeners
 function setupEventListeners() {
     // View toggle
     mapViewBtn.addEventListener('click', () => switchView('map'));
     compareViewBtn.addEventListener('click', () => switchView('compare'));
+    
+    // Category buttons
+    document.querySelectorAll('.category-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            // Remove active class from all category buttons
+            document.querySelectorAll('.category-btn').forEach(btn => 
+                btn.classList.remove('active'));
+            
+            // Add active class to clicked button
+            e.target.classList.add('active');
+            
+            // Filter indicators
+            filterIndicatorsByCategory(e.target.dataset.category);
+        });
+    });
     
     // Indicators selection
     indicatorsList.addEventListener('click', (e) => {
