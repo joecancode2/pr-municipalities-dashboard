@@ -91,5 +91,19 @@
     </div>
   </div>
   <script src="app.js"></script>
+  <!-- Add performance monitoring -->
+  <script>
+    const performance = {
+      start: (label) => console.time(label),
+      end: (label) => console.timeEnd(label)
+    };
+
+    // Use in key functions
+    function updateDashboard() {
+      performance.start('dashboard-update');
+      // ... existing code ...
+      performance.end('dashboard-update');
+    }
+  </script>
 </body>
-</html> 
+</html>

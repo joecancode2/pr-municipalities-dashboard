@@ -1,145 +1,176 @@
-// Global state
-let selectedMunicipalities = [];
-let currentView = 'map';
-let currentCategory = 'economy';
-let indicators = [];
-let municipalitiesData = {};
+// DOM Elements
+const mapViewBtn = document.getElementById('map-view-btn');
+const compareViewBtn = document.getElementById('compare-view-btn');
+const mapView = document.getElementById('map-view');
+const compareView = document.getElementById('compare-view');
+const indicatorsList = document.getElementById('indicators-list');
+const municipalitySearch = document.getElementById('municipality-search');
+const municipalityList = document.getElementById('municipality-list');
+const selectedMunicipalities = document.getElementById('selected-municipalities');
+const selectedCount = document.getElementById('selected-count');
 
-// Initialize the dashboard
-async function initDashboard() {
+// State management
+let currentView = 'map';
+let selectedIndicator = null;
+let selectedMunicipalitiesList = [];
+let municipalitiesData = [];
+let indicatorsData = [];
+
+// Initialize the application
+async function initializeApp() {
     try {
-        // Load municipalities data
-        const response = await fetch('data/municipalities.json');
-        municipalitiesData = await response.json();
+        // Load data
+        const [municipalities, indicators] = await Promise.all([
+            fetch('data/municipalities.json').then(res => res.json()),
+            fetch('data/indicators.json').then(res => res.json())
+        ]);
         
-        // Initialize map
+        municipalitiesData = municipalities;
+        indicatorsData = indicators;
+        
+        // Initialize components
         initializeMap();
+        populateIndicators();
+        populateMunicipalities();
+        setupEventListeners();
         
-        // Initialize indicators
-        updateIndicatorsList();
-        
-        // Initialize event listeners
-        initializeEventListeners();
-        
-        // Update the view
-        updateView();
     } catch (error) {
-        console.error('Error initializing dashboard:', error);
+        console.error('Error initializing app:', error);
     }
 }
 
 // Initialize map
 function initializeMap() {
+    // Initialize Leaflet map centered on Puerto Rico
     const map = L.map('map-container').setView([18.2208, -66.5901], 9);
+    
+    // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 }
 
-// Update indicators list based on current category
-function updateIndicatorsList() {
-    const indicatorsList = document.getElementById('indicators-list');
-    indicatorsList.innerHTML = '';
+// Populate indicators list
+function populateIndicators() {
+    if (!indicatorsData.length) return;
     
-    // Get indicators for current category
-    const categoryIndicators = municipalitiesData.indicators?.[currentCategory] || [];
+    const indicatorsHTML = indicatorsData
+        .map(indicator => `
+            <div class="indicator-item" data-id="${indicator.id}">
+                ${indicator.name}
+            </div>
+        `).join('');
     
-    categoryIndicators.forEach(indicator => {
-        const div = document.createElement('div');
-        div.className = 'indicator-item';
-        div.textContent = indicator.name;
-        div.onclick = () => selectIndicator(indicator);
-        indicatorsList.appendChild(div);
-    });
+    indicatorsList.innerHTML = indicatorsHTML;
 }
 
-// Initialize event listeners
-function initializeEventListeners() {
-    // View toggle buttons
-    document.getElementById('map-view-btn').addEventListener('click', () => switchView('map'));
-    document.getElementById('compare-view-btn').addEventListener('click', () => switchView('compare'));
+// Populate municipalities list
+function populateMunicipalities() {
+    if (!municipalitiesData.length) return;
     
-    // Category buttons
-    document.querySelectorAll('.category-btn').forEach(button => {
-        button.addEventListener('click', () => {
-            document.querySelector('.category-btn.active').classList.remove('active');
-            button.classList.add('active');
-            currentCategory = button.dataset.category;
-            updateIndicatorsList();
-            updateView();
-        });
+    const municipalitiesHTML = municipalitiesData
+        .map(municipality => `
+            <div class="municipality-item" data-id="${municipality.id}">
+                ${municipality.name}
+            </div>
+        `).join('');
+    
+    municipalityList.innerHTML = municipalitiesHTML;
+}
+
+// Setup event listeners
+function setupEventListeners() {
+    // View toggle
+    mapViewBtn.addEventListener('click', () => switchView('map'));
+    compareViewBtn.addEventListener('click', () => switchView('compare'));
+    
+    // Indicators selection
+    indicatorsList.addEventListener('click', (e) => {
+        const indicator = e.target.closest('.indicator-item');
+        if (!indicator) return;
+        
+        // Remove active class from all indicators
+        document.querySelectorAll('.indicator-item').forEach(item => 
+            item.classList.remove('active'));
+        
+        // Add active class to selected indicator
+        indicator.classList.add('active');
+        selectedIndicator = indicator.dataset.id;
+        updateVisualization();
     });
     
     // Municipality search
-    const searchInput = document.getElementById('municipality-search');
-    searchInput.addEventListener('input', (e) => {
+    municipalitySearch.addEventListener('input', (e) => {
         const searchTerm = e.target.value.toLowerCase();
-        const municipalityList = document.getElementById('municipality-list');
-        municipalityList.innerHTML = '';
+        const items = municipalityList.querySelectorAll('.municipality-item');
         
-        Object.keys(municipalitiesData.municipalities || {})
-            .filter(name => name.toLowerCase().includes(searchTerm))
-            .forEach(name => {
-                const div = document.createElement('div');
-                div.className = 'municipality-item';
-                div.textContent = name;
-                div.onclick = () => selectMunicipality(name);
-                municipalityList.appendChild(div);
-            });
+        items.forEach(item => {
+            const matches = item.textContent.toLowerCase().includes(searchTerm);
+            item.style.display = matches ? 'block' : 'none';
+        });
+    });
+    
+    // Municipality selection
+    municipalityList.addEventListener('click', (e) => {
+        const municipality = e.target.closest('.municipality-item');
+        if (!municipality) return;
+        
+        const id = municipality.dataset.id;
+        const name = municipality.textContent.trim();
+        
+        if (selectedMunicipalitiesList.length < 4 && 
+            !selectedMunicipalitiesList.some(m => m.id === id)) {
+            addSelectedMunicipality(id, name);
+        }
     });
 }
 
 // Switch between map and compare views
 function switchView(view) {
     currentView = view;
-    document.querySelector('.view-btn.active').classList.remove('active');
-    document.getElementById(`${view}-view-btn`).classList.add('active');
     
-    document.getElementById('map-view').style.display = view === 'map' ? 'block' : 'none';
-    document.getElementById('compare-view').style.display = view === 'compare' ? 'block' : 'none';
+    // Update buttons
+    mapViewBtn.classList.toggle('active', view === 'map');
+    compareViewBtn.classList.toggle('active', view === 'compare');
     
-    updateView();
+    // Update view containers
+    mapView.style.display = view === 'map' ? 'block' : 'none';
+    compareView.style.display = view === 'compare' ? 'block' : 'none';
+    
+    updateVisualization();
 }
 
-// Select a municipality
-function selectMunicipality(name) {
-    if (selectedMunicipalities.includes(name)) return;
-    if (selectedMunicipalities.length >= 4) {
-        alert('Maximum 4 municipalities can be selected');
-        return;
-    }
-    
-    selectedMunicipalities.push(name);
+// Add selected municipality
+function addSelectedMunicipality(id, name) {
+    selectedMunicipalitiesList.push({ id, name });
     updateSelectedMunicipalities();
-    updateView();
+    updateVisualization();
 }
 
-// Remove a municipality from selection
-function removeMunicipality(name) {
-    selectedMunicipalities = selectedMunicipalities.filter(m => m !== name);
+// Remove selected municipality
+function removeSelectedMunicipality(id) {
+    selectedMunicipalitiesList = selectedMunicipalitiesList.filter(m => m.id !== id);
     updateSelectedMunicipalities();
-    updateView();
+    updateVisualization();
 }
 
-// Update the selected municipalities display
+// Update selected municipalities display
 function updateSelectedMunicipalities() {
-    const container = document.getElementById('selected-municipalities');
-    container.innerHTML = '';
-    document.getElementById('selected-count').textContent = selectedMunicipalities.length;
+    selectedCount.textContent = selectedMunicipalitiesList.length;
     
-    selectedMunicipalities.forEach(name => {
-        const pill = document.createElement('div');
-        pill.className = 'municipality-pill';
-        pill.innerHTML = `
-            ${name}
-            <span class="remove-btn" onclick="removeMunicipality('${name}')">&times;</span>
-        `;
-        container.appendChild(pill);
-    });
+    const municipalitiesHTML = selectedMunicipalitiesList
+        .map(municipality => `
+            <div class="municipality-pill">
+                ${municipality.name}
+                <span class="remove-btn" onclick="removeSelectedMunicipality('${municipality.id}')">×</span>
+            </div>
+        `).join('');
+    
+    selectedMunicipalities.innerHTML = municipalitiesHTML;
 }
 
-// Update the current view (map or compare)
-function updateView() {
+// Update visualization based on current state
+function updateVisualization() {
     if (currentView === 'map') {
         updateMapView();
     } else {
@@ -147,32 +178,17 @@ function updateView() {
     }
 }
 
-// Update the map view
+// Update map visualization
 function updateMapView() {
-    // Implementation for updating map visualization
-    // This would include updating colors, legends, etc.
+    // Implementation will depend on your specific visualization needs
+    console.log('Updating map view...');
 }
 
-// Update the compare view
+// Update compare visualization
 function updateCompareView() {
-    const container = document.getElementById('chart-container');
-    if (selectedMunicipalities.length === 0) {
-        container.innerHTML = '<p>Select municipalities to compare</p>';
-        return;
-    }
-    
-    // Implementation for updating comparison visualization
-    // This would include creating charts, tables, etc.
+    // Implementation will depend on your specific visualization needs
+    console.log('Updating compare view...');
 }
 
-// Select an indicator
-function selectIndicator(indicator) {
-    document.querySelectorAll('.indicator-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    event.target.classList.add('active');
-    updateView();
-}
-
-// Initialize the dashboard when the page loads
-document.addEventListener('DOMContentLoaded', initDashboard); 
+// Initialize the app when the DOM is loaded
+document.addEventListener('DOMContentLoaded', initializeApp); 

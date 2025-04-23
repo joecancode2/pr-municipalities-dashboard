@@ -1,0 +1,74 @@
+{
+  "indicators": [
+    {
+      "id": "unemployment_rate",
+      "name": "Tasa de Desempleo",
+      "category": "economy",
+      "unit": "%",
+      "description": "Porcentaje de la fuerza laboral que está desempleada"
+    },
+    {
+      "id": "median_income",
+      "name": "Ingreso Medio",
+      "category": "economy",
+      "unit": "$",
+      "description": "Ingreso medio por hogar"
+    },
+    {
+      "id": "graduation_rate",
+      "name": "Tasa de Graduación",
+      "category": "education",
+      "unit": "%",
+      "description": "Porcentaje de estudiantes que se gradúan de escuela superior"
+    },
+    {
+      "id": "college_enrollment",
+      "name": "Matrícula Universitaria",
+      "category": "education",
+      "unit": "%",
+      "description": "Porcentaje de graduados que se matriculan en la universidad"
+    },
+    {
+      "id": "child_poverty",
+      "name": "Pobreza Infantil",
+      "category": "family",
+      "unit": "%",
+      "description": "Porcentaje de niños viviendo bajo el nivel de pobreza"
+    },
+    {
+      "id": "teen_pregnancy",
+      "name": "Embarazo Adolescente",
+      "category": "family",
+      "unit": "por 1,000",
+      "description": "Tasa de embarazos en adolescentes"
+    },
+    {
+      "id": "insurance_coverage",
+      "name": "Cobertura de Seguro Médico",
+      "category": "health",
+      "unit": "%",
+      "description": "Porcentaje de la población con seguro médico"
+    },
+    {
+      "id": "life_expectancy",
+      "name": "Expectativa de Vida",
+      "category": "health",
+      "unit": "años",
+      "description": "Expectativa de vida al nacer"
+    },
+    {
+      "id": "crime_rate",
+      "name": "Tasa de Criminalidad",
+      "category": "safety",
+      "unit": "por 100,000",
+      "description": "Crímenes reportados por cada 100,000 habitantes"
+    },
+    {
+      "id": "domestic_violence",
+      "name": "Violencia Doméstica",
+      "category": "safety",
+      "unit": "por 100,000",
+      "description": "Casos de violencia doméstica por cada 100,000 habitantes"
+    }
+  ]
+} 
